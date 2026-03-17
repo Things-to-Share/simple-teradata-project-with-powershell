@@ -23,6 +23,8 @@ STOP
 
 Detailed Functional Description Generation
 
+- Tilte should be "Documentation: `<sql-file-name>.sql` ([Back](../../<virtual-schema-name>.md))"
+
 - Provide functional descption of the "context" of the shared SQL definition(s). 
 - understand that part before "_usp_" or "_viw_" or "_tbl_" is the functional schema name, the part after is the object name.
 - SQL Object Types:

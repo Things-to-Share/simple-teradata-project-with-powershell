@@ -1,4 +1,4 @@
-# Documentation: `example.ps1` [back](./../project.md)
+# Documentation: `example.ps1` [back](./../scripts.md)
 
 ## Brief Overview
 

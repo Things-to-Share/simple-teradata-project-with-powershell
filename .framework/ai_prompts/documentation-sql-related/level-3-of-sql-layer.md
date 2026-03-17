@@ -21,7 +21,9 @@ STOP
 
 Act like a Teradat SQL / PowerShell expert: Overview of the underlaying functionality
 
-- Given the previous texts, create summary overview of the described functionality. 
+- Tilte should be "Documentation: `<layer>.sql` ([Back](../../project.md))"
+
+- Given the previous texts, create summary overview of the described data features per virtual schema.
 - The document structure handle the following topic, in the given order
   - Introduction
     - Max 500 words

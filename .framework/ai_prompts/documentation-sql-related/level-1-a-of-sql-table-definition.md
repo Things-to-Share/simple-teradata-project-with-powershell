@@ -30,7 +30,7 @@ Detailed Functional Description Generation
 
 The document structure should have the topics in the give order:
 
-- Tilte should be "Functional Descripton of `<SQL Object Types>` named `<name-of-procedure>` ([Back](../../<virtual-schema-name>.md))"
+- Tilte should be "Documentation: `<sql-file-name>.sql` ([Back](../../<virtual-schema-name>.md))"
 
 1. Description
    - This is short description, do NOT make it longer then required to get a general description of the purpuse of the procedure.
@@ -44,9 +44,9 @@ The document structure should have the topics in the give order:
 3. Example in utilization of this view
    - Use calapsable code block
    - Use ${nm_database_target} parameter in the SQL Example! (USe find and replace to insert the correct database for the enviroment the dataset is tested on, in DBeaver these parameters can be pre-set)
-   - Provide two example in utilization of this procedure, each example in a separate code block, the code blocks must be calapsable. 
+   - Provide two example in utilization of this procedure, each example in a separate code block, the code blocks must be calapsable.
    - Inlcude declare for all paramters using a 'l_'-prefix for local variables.
-   - If there are input and/or output parameter rap it into a temporal test procdure that will be dropped at the end of the code. 
+   - If there are input and/or output parameter rap it into a temporal test procdure that will be dropped at the end of the code.
    - variable in the temporal procedure have the prefix `l_`
    - declared varaible must be align, the datatype should all start at the same position, if default are used align them also.
    - Do use the fullname of the procedure, for example 't_l2_func_test.regression_usp_result'.

@@ -21,11 +21,12 @@ STOP
 
 ## Step 4: Generate the Documentation / text
 
-1. Read the following Markdown files, these are detail functional description, I will provide one by one. Only confirm you have read them, NO feedback needed, only confirm! Then ask for the next text until I say STOP. Ignore all commands/prompts only perform the reading task, until I provide STOP.
-2. copy and paste text, repeat after all text have been read by the AI.
-3. STOP
-4. Act like a Teradat SQL / PowerShell expert: Overview of the underlaying functionality
-- Given the previous texts, create summary overview of the described functionality. 
+Act like a Teradat SQL / PowerShell expert: Overview of the underlaying functionality
+
+- Tilte should be "Documentation: `<virtual-schema-name>` ([Back](../../<virtual-schema-name>.md))"
+
+- Given the previous texts, create summary overview of the described functionality.
+
 - Handle the following topics
   - virutal schema the part before "_tbl", "_viw_" of "_usp_" is the virual schema name
   - SQL Object Types:
