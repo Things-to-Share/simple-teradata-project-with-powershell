@@ -24,3 +24,4 @@ function deploy { param(
   }
   ps_build_and_publish @param
 }
+m

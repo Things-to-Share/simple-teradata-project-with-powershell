@@ -1,4 +1,4 @@
-# Documentation `nuild_and_publish.ps1` [back](./../scripts.md)
+# Documentation `classes.ps1` [back](./../scripts.md)
 
 ## Brief Overview
 
