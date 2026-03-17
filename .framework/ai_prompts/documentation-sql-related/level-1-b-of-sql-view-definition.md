@@ -1,4 +1,4 @@
-# AI Prompt: `level-1-a-of-sql-table-or-view-definition.md`
+# AI Prompt: `level-1-a-of-sql-view-definition.md`
 
 ## Step 1: Creating Context
 
@@ -9,7 +9,11 @@ Read the following SQL definition files, I will provide one by one. Only confirm
 Copy and paste text, repeat after all text have been read by the AI.
 - Start by loading in the the table and view definitions that are involved with the view
 - also let the AI read all involved table and views that are involved with the procedure.
-- 
+
+Follow this format:
+<relative-file-path>
+<text-of-file>
+
 ## Step 3: STOP
 
 STOP
@@ -58,5 +62,5 @@ The document structure should have the topics in the give order:
     - **LLM Used:** Claude (Anthropic)
     - **Prompt Used:** [level-1-a-of-sql-table-or-view-definition.txt](./../.ai_prompts/level-1-a-of-sql-table-or-view-definition.txt)
     - add blank line
-    - *end of document*
+    - "*end of document*"
     - add blank line

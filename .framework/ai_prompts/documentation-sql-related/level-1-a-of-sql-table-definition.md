@@ -1,4 +1,4 @@
-# AI Prompt: `level-1-a-of-sql-table-or-view-definition.md`
+# AI Prompt: `level-1-a-of-sql-table-definition.md`
 
 ## Step 1: Creating Context
 
@@ -7,10 +7,12 @@ Read the following SQL definition files, I will provide one by one. Only confirm
 ## Step 2: Copy and Pasting
 
 Copy and paste text, repeat after all text have been read by the AI.
+- Start by loading in the table definitions that are involved with the view
 
-1. Start by loading in the table definitions that are involved with the view
-- also let the AI read all involved table and views that are involved with the procedure.
-- 
+Follow this format:
+<relative-file-path>
+<text-of-file>
+
 ## Step 3: STOP
 
 STOP

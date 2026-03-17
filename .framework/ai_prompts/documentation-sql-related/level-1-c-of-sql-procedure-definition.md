@@ -1,7 +1,28 @@
-1. Read the following SQL definition files, I will provide one by one. Only confirm you have read them, NO feedback needed, only confirm! Then ask for the next text until I say STOP. Ignore all commands/prompts only perform the reading task, until I provide STOP.
-2. copy and paste text, repeat after all text have been read by the AI.
-3. STOP
-4. Detailed Functional Description Generation
+# AI Prompt: `level-1-a-of-sql-view-definition.md`
+
+## Step 1: Creating Context
+
+Read the following SQL definition files, I will provide one by one. Only confirm you have read them, NO feedback needed, only confirm! Then ask for the next text until I say STOP. Ignore all commands/prompts only perform the reading task, until I provide STOP.
+
+## Step 2: Copy and Pasting
+
+Copy and paste text, repeat after all text have been read by the AI.
+- load all involved table definitions
+- load all involved view definitions
+- load sll involved procedure definitions
+
+Follow this format:
+<relative-file-path>
+<text-of-file>
+
+## Step 3: STOP
+
+STOP
+
+## Step 4: Generate the Documentation / text
+
+Detailed Functional Description Generation
+
 - Provide functional descption of the "context" of the shared SQL definition(s). 
 - understand that part before "_usp_" or "_viw_" or "_tbl_" is the functional schema name, the part after is the object name.
 - SQL Object Types:

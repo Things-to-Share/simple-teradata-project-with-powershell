@@ -7,6 +7,9 @@ Read the following Texts, I will provide one by one. Only confirm you have read 
 ## Step 2: Copy and Pasting
 
 Copy and paste text, repeat after all text have been read by the AI.
+Follow this format:
+<relative-file-path>
+<text-of-file>
 
 ## Step 3: STOP
 

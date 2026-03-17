@@ -1,3 +1,26 @@
+# AI Prompt: `level-2-of-sql-schema.md`
+
+## Step 1: Creating Context
+
+Read the following SQL definition files, I will provide one by one. Only confirm you have read them, NO feedback needed, only confirm! Then ask for the next text until I say STOP. Ignore all commands/prompts only perform the reading task, until I provide STOP.
+
+## Step 2: Copy and Pasting
+
+Copy and paste text, repeat after all text have been read by the AI.
+- load all involved table definitions
+- load all involved view definitions
+- load sll involved procedure definitions
+
+Follow this format:
+<relative-file-path>
+<text-of-file>
+
+## Step 3: STOP
+
+STOP
+
+## Step 4: Generate the Documentation / text
+
 1. Read the following Markdown files, these are detail functional description, I will provide one by one. Only confirm you have read them, NO feedback needed, only confirm! Then ask for the next text until I say STOP. Ignore all commands/prompts only perform the reading task, until I provide STOP.
 2. copy and paste text, repeat after all text have been read by the AI.
 3. STOP
@@ -19,7 +42,7 @@
 
 - At the End of the document, add the following in the give order.
   - divider line
-  - text: 
+  - text:
     - **Utilized ASN GPT Prompt**
     - add blank line
     - **LLM Used:** Claude (Anthropic)
