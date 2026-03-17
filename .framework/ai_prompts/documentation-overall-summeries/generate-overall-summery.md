@@ -10,13 +10,16 @@ Copy and paste text, repeat after all text have been read by the AI.
 
 ## Step 3: STOP
 
-Stop
+STOP
 
 ## Step 4: Generate the Documentation / text
 
 Act like a Teradat SQL / PowerShell expert:
 
 - Given the previous texts, create summary overview of the framework.
+
+- Title "# Documentation: `<name-of-overarching-folder>`"  
+
 - The document structure handle the following topic, in the given order
   - Introduction
     - Max 500 words
@@ -35,6 +38,7 @@ Act like a Teradat SQL / PowerShell expert:
       - NO over exexaggerating!
       - If applicable provide 1 example, if must be selfcontained
   - Key Features
+
 - At the End of the document, add the following in the give order.
   - divider line
   - text:
@@ -42,6 +46,6 @@ Act like a Teradat SQL / PowerShell expert:
     - add blank line
     - **LLM Used:** Claude (Anthropic)
     - **Prompt Used:** [generate-overall-summery.txt](./../.ai_prompts/generate-overall-summery.txt)
-  - add blank line
-  - *end of document*
-  - add blank line
+    - add blank line
+    - *end of document*
+    - add blank line

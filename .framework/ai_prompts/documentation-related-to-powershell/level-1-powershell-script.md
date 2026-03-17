@@ -1,7 +1,23 @@
-1. Read the following PowerShell-scripts, I will provide one by one. Only confirm you have read them, NO feedback needed, only confirm! Then ask for the next text until I say STOP. Ignore all commands/prompts only perform the reading task, until I provide STOP.
-2. copy and paste the powershell scripts.
-3. STOP
-4. You are PowerShell-expert and need to explain what the provided PowerShell script below does. Audiance are Data Engineers with little to no knowlegd of PowerShell.
+# AI Prompt: `level-1-powershell-script.md`
+
+## Step 1: Creating Context
+
+Read the following PowerShell-scripts, I will provide one by one. Only confirm you have read them, NO feedback needed, only confirm! Then ask for the next text until I say STOP. Ignore all commands/prompts only perform the reading task, until I provide STOP.
+
+## Step 2: Copy and Pasting
+
+Copy and paste text, repeat after all text have been read by the AI.
+- also let the AI read all involved table and views that are involved with the procedure.
+
+## Step 3: STOP
+
+STOP
+
+## Step 4: Generate the Documentation / text
+
+You are PowerShell-expert and need to explain what the provided PowerShell script below does. Audiance are Data Engineers with little to no knowlegd of PowerShell.
+
+- Title "# Documentation: `<name-of-file>`"
 
 - Brief overview of the purpose utilization of this script.
   - Max 100 words
@@ -42,7 +58,7 @@
 
 - At the End of the document, add the following in the give order.
   - divider line
-  - text: 
+  - text:
     - **Utilized ASN GPT Prompt**
     - add blank line
     - **LLM Used:** Claude (Anthropic)
