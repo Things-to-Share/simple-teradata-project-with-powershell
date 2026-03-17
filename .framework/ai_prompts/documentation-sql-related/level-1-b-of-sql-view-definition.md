@@ -7,7 +7,9 @@ Read the following SQL definition files, I will provide one by one. Only confirm
 ## Step 2: Copy and Pasting
 
 Copy and paste text, repeat after all text have been read by the AI.
-
+- Start by loading in the the table and view definitions that are involved with the view
+- also let the AI read all involved table and views that are involved with the procedure.
+- 
 ## Step 3: STOP
 
 STOP
