@@ -19,6 +19,8 @@ STOP
 
 You are PowerShell-expert and need to explain what the provided PowerShell script below does. Audiance are Data Engineers with little to no knowlegd of PowerShell.
 
+- Title "# Documentation: `<name-of-overarching-folder>`"
+
 - Given the previous texts, create summary overview. Handle the following topics
 
 - The document structure handle the following topic, in the given order
