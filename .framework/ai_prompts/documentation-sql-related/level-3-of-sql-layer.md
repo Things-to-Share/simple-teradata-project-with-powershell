@@ -21,7 +21,7 @@ STOP
 
 Act like a Teradat SQL / PowerShell expert: Overview of the underlaying functionality
 
-- Tilte should be "Documentation: `<layer>.sql` ([Back](../../project.md))"
+- Tilte should be "Documentation: `<layer>.sql`  [Back](./../<overarching-folder-name>.md)"
 
 - Given the previous texts, create summary overview of the described data features per virtual schema.
 - The document structure handle the following topic, in the given order
@@ -45,7 +45,7 @@ Act like a Teradat SQL / PowerShell expert: Overview of the underlaying function
     - **Utilized ASN GPT Prompt**
     - add blank line
     - **LLM Used:** Claude (Anthropic)
-    - **Prompt Used:** [level-2-of-sql-schema.txt](./../.ai_prompts/level-2-of-sql-schema.txt)
+    - **Prompt Used:** [level-3-of-sql-layer.md](./../ai_prompts/documentation-sql-related/level-3-of-sql-layer.md)
     - add blank line
     - *end of document*
     - add blank line

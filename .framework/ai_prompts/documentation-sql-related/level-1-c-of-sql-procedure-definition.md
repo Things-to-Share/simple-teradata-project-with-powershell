@@ -21,11 +21,12 @@ STOP
 
 ## Step 4: Generate the Documentation / text
 
+for file "path_to_the_sql_procedure_file" do the following:
 Detailed Functional Description Generation
 
-- Tilte should be "Documentation: `<sql-file-name>.sql` ([Back](../../<virtual-schema-name>.md))"
+- Tilte should be "Documentation: `<sql-file-name>.sql` [Back](./../<virtual-schema-name>.md)"
 
-- Provide functional descption of the "context" of the shared SQL definition(s). 
+- Provide functional descption of the "context" of the shared SQL definition(s).
 - understand that part before "_usp_" or "_viw_" or "_tbl_" is the functional schema name, the part after is the object name.
 - SQL Object Types:
   - "_usp_" is SQL Procedure
@@ -59,24 +60,24 @@ The document structure should have the topics in the give order:
   - Let the Steps correlate to the Mermaid diagram, the text of diagram block must follow pattern `#.step-name`,  # is substituted by the number correlating with the step.
 
 - Examples
-   - Use ${nm_database_target} parameter in the SQL Example! (Use find and replace to insert the correct database for the enviroment the dataset is tested on, in DBeaver these parameters can be pre-set)
-   - place the examples in calapsable code block
-   - Provide two example in utilization of this procedure, each example in a separate code block, the code blocks must be calapsable. 
-   - Inlcude declare for all paramters using a 'l_'-prefix for local variables. 
-   - If there are input and/or output parameter rap it into a temporal test procdure that will be dropped at the end of the code. 
-   - variable in the temporal procedure have the prefix `l_`
-   - declared varaible must be align, the datatype should all start at the same position, if default are used align them also.
-   - Do use the fullname of the procedure, for example 't_l2_func_test.regression_usp_result'.
-   - If there is a table being populated add select-statement, in the where clause the filter value should be aligned.
-   - cleanup any temporal procedures
+  - Use ${nm_database_target} parameter in the SQL Example! (Use find and replace to insert the correct database for the enviroment thedataset is tested on, in DBeaver these parameters can be pre-set)
+  - place the examples in calapsable code block
+  - Provide two example in utilization of this procedure, each example in a separate code block, the code blocks must be calapsable.
+  - Inlcude declare for all paramters using a 'l_'-prefix for local variables.
+  - If there are input and/or output parameter rap it into a temporal test procdure that will be dropped at the end of the code.
+  - variable in the temporal procedure have the prefix `l_`
+  - declared varaible must be align, the datatype should all start at the same position, if default are used align them also.
+  - Do use the fullname of the procedure, for example 't_l2_func_test.regression_usp_result'.
+  - If there is a table being populated add select-statement, in the where clause the filter value should be aligned.
+  - cleanup any temporal procedures
 
 - At the End of the document, add the following in the give order.
   - divider line
-  - text: 
+  - text:
     - **Utilized ASN GPT Prompt**
     - add blank line
     - **LLM Used:** Claude (Anthropic)
-    - **Prompt Used:** [level-1-b-of-sql-procedure-definition.txt](./../.ai_prompts/level-1-b-of-sql-procedure-definition.txt)
+    - **Prompt Used:** [level-1-c-of-sql-procedure-definition.md](./../ai_prompts/documentation-sql-related/level-1-b-of-sql-procedure-definition.md)
     - add blank line
     - *end of document*
     - add blank line

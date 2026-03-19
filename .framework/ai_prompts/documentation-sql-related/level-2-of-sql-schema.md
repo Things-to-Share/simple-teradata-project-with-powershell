@@ -23,7 +23,7 @@ STOP
 
 Act like a Teradat SQL / PowerShell expert: Overview of the underlaying functionality
 
-- Tilte should be "Documentation: `<virtual-schema-name>` ([Back](../../<virtual-schema-name>.md))"
+- Tilte should be "Documentation: `<virtual-schema-name>` [Back](./../<overarching-folder-name>.md)"
 
 - Given the previous texts, create summary overview of the described functionality.
 
@@ -47,7 +47,7 @@ Act like a Teradat SQL / PowerShell expert: Overview of the underlaying function
     - **Utilized ASN GPT Prompt**
     - add blank line
     - **LLM Used:** Claude (Anthropic)
-    - **Prompt Used:** [level-2-of-sql-schema.txt](./../.ai_prompts/level-2-of-sql-schema.txt)
+    - **Prompt Used:** [level-2-of-sql-schema.md](./../ai_prompts/documentation-sql-related/level-2-of-sql-schema.md)
     - add blank line
     - *end of document*
     - add blank line
