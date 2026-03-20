@@ -1,60 +1,70 @@
-# Functional Description of `metadata_tbl_referenced`
+# Documentation: `tbl_referenced.sql` [Back](./../metadata.md)
 
-## Purpose
+## Description
 
-The `metadata_tbl_referenced` table serves as a metadata repository within the metadata functional schema to track table dependencies and references. This table maintains relationships between tables by storing which tables are referenced by other tables, creating a dependency mapping system. It enables the identification of table hierarchies, supports impact analysis, and helps in understanding data lineage across the database environment.
+Stores the directed dependency edges between tracked tables. Each record links a table (`id_table`) to another table it depends on (`id_table_referenced`), as detected from the view SQL text by `viw_referenced`. This edge list is the input for process group calculation in `viw_process_group` and enables data lineage and impact analysis across the metadata framework.
 
-## Structure
+## Table Structure
 
-| Order | Is Primary Key | Name | Datatype | Is Nullable | Description |
-|-------|---------------|------|----------|-------------|-------------|
-| 1 | Yes | id_table | CHAR(64) | No | Identifier of the table that references another table, part of composite primary key |
-| 2 | Yes | id_table_referenced | VARCHAR(128) | Yes | Identifier of the table being referenced, part of composite primary key |
-| 3 | No | meta_dt_created_at | TIMESTAMP | No | Timestamp when the reference relationship was created, defaults to current timestamp |
+| Order | Is Primary Key | Name                   | Datatype     | Is Nullable | Functional Description                                                                        |
+|------:|:--------------:|:-----------------------|:-------------|:-----------:|:----------------------------------------------------------------------------------------------|
+|     1 | Yes            | `id_table`             | CHAR(64)     | No          | SHA-256 hash identifier of the dependent table (the table that references another).           |
+|     2 | Yes            | `id_table_referenced`  | VARCHAR(128) | Yes         | SHA-256 hash identifier of the upstream table being referenced. NULL if no dependency found.  |
+|     3 | No             | `meta_dt_created_at`   | TIMESTAMP    | Yes         | Record creation timestamp; defaults to `CURRENT_TIMESTAMP`.                                   |
 
-## Usage
+## Example in Utilization of this Table
 
-• Table dependency mapping and relationship tracking
-• Data lineage analysis and impact assessment for schema changes
-• Supporting ETL process sequencing based on table dependencies
-• Identifying circular references and dependency loops
-• Database documentation and metadata management
-• Change impact analysis for table modifications or deletions
-• Supporting automated processing order determination
+<details>
+<summary>Example 1 – List all dependency edges</summary>
+
+```sql
+-- Example 1: Show all table-to-table dependency relationships
+SELECT
+    ref.id_table,
+    tbl.nm_schema          AS nm_schema,
+    tbl.nm_table           AS nm_table,
+    ref.id_table_referenced,
+    up.nm_schema           AS nm_schema_referenced,
+    up.nm_table            AS nm_table_referenced
+FROM      ${nm_database_target}metadata_tbl_referenced AS ref
+JOIN      ${nm_database_target}metadata_tbl_table      AS tbl
+ON        tbl.id_table = ref.id_table
+LEFT JOIN ${nm_database_target}metadata_tbl_table      AS up
+ON        up.id_table  = ref.id_table_referenced
+ORDER BY  tbl.nm_schema,
+          tbl.nm_table;
+```
+
+</details>
+
+<details>
+<summary>Example 2 – Find all tables that depend on a specific table</summary>
+
+```sql
+-- Example 2: Identify all tables that reference a specific upstream table
+SELECT
+    tbl.nm_schema  AS nm_schema_dependent,
+    tbl.nm_table   AS nm_table_dependent,
+    up.nm_schema   AS nm_schema_upstream,
+    up.nm_table    AS nm_table_upstream
+FROM      ${nm_database_target}metadata_tbl_referenced AS ref
+JOIN      ${nm_database_target}metadata_tbl_table      AS tbl
+ON        tbl.id_table  = ref.id_table
+JOIN      ${nm_database_target}metadata_tbl_table      AS up
+ON        up.id_table   = ref.id_table_referenced
+WHERE     up.nm_schema  = 'inbound'
+AND       up.nm_table   = 'tbl_customer'
+ORDER BY  tbl.nm_schema,
+          tbl.nm_table;
+```
+
+</details>
 
 ---
 
 **Utilized ASN GPT Prompt**
 
-<details>
-<summary>the prompt</summary>
-
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Prompt:
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Can you create short functional description of the following table definition, Handlingthe following topics
-title should follow the this template "Functional Description of `<name-of-the-table>`".
-
-- The document structure handle the following topic, in the given order
-  - Purpose (Short description of table purpos, max 200 words, DO NOT make it longer then needed)
-  - Structure (present in table format with column for Order, Is Primarykey, Name, Datatype, Is Nullable, Description)
-  - Usage (bullet points on utilization of the table)
-- At the End of the document after the Examples, add the following in the give order.
-  - divider line
-  - text **Utilized ASN GPT Prompt**
-  - calapsable text block with the used ASN GPT prompt, title "the prompt" without everthing after "Table definition:"
-  - Add final blank line
-  - Add the text "*end of document*"
-  - Add final blank line
-
-</details>
+**LLM Used:** Claude (Anthropic)
+**Prompt Used:** [level-1-a-of-sql-table-or-view-definition.md](./../ai_prompts/documentation-sql-related/level-1-a-of-sql-table-or-view-definition.md)
 
 *end of document*

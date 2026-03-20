@@ -1,42 +1,68 @@
-# Teradata View Documentation: metadata_viw_table
+# Documentation: `viw_table.sql` [Back](./../metadata.md)
 
-## 1. General Description
+## Description
 
-The `metadata_viw_table` view is a comprehensive metadata management component that belongs to the **metadata** functional schema. This view extracts and standardizes table metadata from the Teradata system catalog (DBC.TablesV), creating a unified view of database objects with their associated metadata, schemas, and view definitions. It processes both tables and views, extracting JSON metadata from comment strings and establishing relationships between tables and their corresponding views through naming conventions.
+Extracts table-level metadata from `DBC.TablesV` for all physical tables within the target database. Parses the functional schema and table name from the Teradata physical naming convention (removing the database prefix and splitting on `_tbl_`). Joins each table to its corresponding population view to capture the full view SQL text. Functional name and description are sourced from JSON embedded in the object's comment string. Used to populate `metadata_tbl_table`.
 
-The view serves as a central repository for table metadata, enabling consistent access to table information, functional descriptions, and associated view definitions across the database environment.
+## Output Columns
 
-## 2. Logical / Functional Steps
+| Order | Is Primary Key | Name                 | Datatype       | Is Nullable | Functional Description                                                                              |
+|------:|:--------------:|:---------------------|:---------------|:-----------:|:----------------------------------------------------------------------------------------------------|
+|     1 | -              | `id_table`           | CHAR(64)       | No          | SHA-256 hash of database + table name. Unique table identifier.                                     |
+|     2 | -              | `nm_schema`          | VARCHAR(128)   | Yes         | Parsed functional schema name (part before `_tbl_`).                                                |
+|     3 | -              | `nm_table`           | VARCHAR(128)   | No          | Parsed table name (part after `_tbl_`, prefixed with `tbl_`).                                       |
+|     4 | -              | `fn_table`           | VARCHAR(128)   | No          | Functional name from JSON comment (`$.fn`). Defaults to `'n/a'` when not set.                       |
+|     5 | -              | `fd_table`           | VARCHAR(1024)  | Yes         | Functional description from JSON comment (`$.fd`). Defaults to `'n/a'` when not set.                |
+|     6 | -              | `nm_view`            | VARCHAR(128)   | No          | Name of the corresponding population view (derived by replacing `_tbl_` with `_viw_`).              |
+|     7 | -              | `tx_view`            | VARCHAR(25000) | No          | Full SQL text of the population view; source data for dependency detection in `viw_referenced`.     |
 
-1. **Metadata Extraction (cte_md)**:
-   - Queries DBC.TablesV system catalog for tables and views
-   - Extracts JSON metadata from CommentString field
-   - Filters objects matching the target database pattern
-   - Processes table naming conventions to separate schema and table components
-   - Identifies table types (T=Table, V=View) and creates corresponding view names
-
-2. **Schema and Table Name Parsing**:
-   - Removes database prefix from full object names
-   - Identifies schema boundaries using '_tbl' and '_viw' markers
-   - Extracts clean schema and table names from composite names
-   - Standardizes naming conventions across different object types
-
-3. **Table-View Relationship Mapping (cte_table)**:
-   - Generates unique SHA256 hash identifiers for each table
-   - Extracts functional metadata from JSON comments (fn=function, fd=description)
-   - Links tables with their corresponding views through naming conventions
-   - Consolidates metadata into standardized output format
-
-4. **Result Generation**:
-   - Returns processed table metadata with unique identifiers
-   - Includes functional names and descriptions extracted from JSON metadata
-   - Provides associated view names and definitions where applicable
-   - Ensures consistent data types and null handling
-
-## 3. Examples in Utilization of This View
+## Example in Utilization of this View
 
 <details>
-<summary><strong>Example 1: Table Metadata Discovery and Analysis</strong></summary>
+<summary>Example 1 – List all tracked tables with functional metadata</summary>
+
+```sql
+-- Example 1: Retrieve all tracked tables with functional names, ordered by schema and table
+SELECT
+    tbl.nm_schema,
+    tbl.nm_table,
+    tbl.fn_table,
+    tbl.fd_table,
+    tbl.nm_view
+FROM  ${nm_database_target}metadata_viw_table AS tbl
+ORDER BY tbl.nm_schema,
+         tbl.nm_table;
+```
+
+</details>
+
+<details>
+<summary>Example 2 – Retrieve the population view SQL for a specific table</summary>
+
+```sql
+-- Example 2: Inspect the view SQL for a specific table to verify its content
+SELECT
+    tbl.nm_schema,
+    tbl.nm_table,
+    tbl.nm_view,
+    tbl.tx_view
+FROM  ${nm_database_target}metadata_viw_table AS tbl
+WHERE tbl.nm_schema = 'inbound'
+AND   tbl.nm_table  = 'tbl_customer';
+```
+
+</details>
+
+---
+
+**Utilized ASN GPT Prompt**
+
+**LLM Used:** Claude (Anthropic)
+**Prompt Used:** [level-1-b-of-sql-table-or-view-definition.md](./../.ai_prompts/documentation-sql-related/level-1-b-of-sql-view-or-view-definition.md)
+
+*end of document*
+
+
 
 ```sql
 -- Example 1: Comprehensive table metadata analysis

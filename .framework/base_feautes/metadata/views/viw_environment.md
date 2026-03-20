@@ -1,149 +1,63 @@
-# Teradata View Documentation: metadata_viw_environment
+# Documentation: `viw_environment.sql` [Back](./../metadata.md)
 
-## 1. General Description
+## Description
 
-The `metadata_viw_environment` view is a metadata management component that provides standardized environment information for the system. This view belongs to the **metadata** functional schema and serves as a single source of truth for environment-related data including environment identification, codes, names, and associated database information.
+Constructs a single-row environment record by combining deployment parameters with the physical database name resolved from `DBC.TablesV`. Maps the configured environment code, name, and Git remote URL alongside the resolved database name and target prefix. Used to populate `metadata_tbl_environment`.
 
-The view generates a unique SHA256 hash identifier for each environment and consolidates key environment metadata into a consistent structure that can be referenced across the system.
+## Output Columns
 
-## 2. Logical / Functional Steps
+| Order | Is Primary Key | Name                  | Datatype     | Is Nullable | Functional Description                                                                     |
+|------:|:--------------:|:----------------------|:-------------|:-----------:|:-------------------------------------------------------------------------------------------|
+|     1 | -              | `id_environment`      | CHAR(64)     | No          | SHA-256 hash of `${cd_environment}`. Unique environment identifier.                        |
+|     2 | -              | `cd_environment`      | VARCHAR(32)  | No          | Environment code from deployment parameter `${cd_environment}` (e.g. `DEV`, `PRD`).        |
+|     3 | -              | `nm_environment`      | VARCHAR(128) | No          | Full environment name from deployment parameter `${nm_environment}`.                       |
+|     4 | -              | `tx_git_remote`       | VARCHAR(128) | No          | Git remote URL for the source code repository associated with this environment.            |
+|     5 | -              | `nm_database`         | VARCHAR(128) | No          | Physical database name resolved from `DBC.TablesV` matching the target prefix.             |
+|     6 | -              | `nm_database_target`  | VARCHAR(128) | No          | Database target prefix from deployment parameter `${nm_database_target}`.                  |
 
-1. **Environment Data Construction**: Creates a Common Table Expression (CTE) that constructs environment metadata using system parameters
-2. **ID Generation**: Generates a unique 64-character SHA256 hash identifier using the environment code as input
-3. **Parameter Mapping**: Maps system parameters to standardized column names:
-   - `${cd_environment}` → `cd_environment` (environment code)
-   - `${nm_environment}` → `nm_environment` (environment name)
-   - `${nm_database_target}` → `nm_database` (target database name)
-4. **Data Standardization**: Applies appropriate data types and lengths to ensure consistency
-5. **Result Set**: Returns a single row containing the complete environment metadata
-
-## 3. Examples in Utilization of This View
+## Example in Utilization of this View
 
 <details>
-<summary><strong>Example 1: Basic Environment Information Query</strong></summary>
+<summary>Example 1 – Retrieve the current environment record</summary>
 
 ```sql
--- Example 1: Retrieve current environment information
-DECLARE l_environment_code VARCHAR(32)     DEFAULT NULL;
-DECLARE l_environment_name VARCHAR(128)    DEFAULT NULL;
-DECLARE l_database_name    VARCHAR(128)    DEFAULT NULL;
-
--- Query the environment view
-SELECT 
-    cd_environment,
-    nm_environment,
-    nm_database,
-    id_environment
-FROM ${nm_database_target}metadata_viw_environment
-WHERE cd_environment IS NOT NULL;
-
--- Store results in variables for further processing
-SELECT 
-    cd_environment,
-    nm_environment,
-    nm_database
-INTO 
-    l_environment_code,
-    l_environment_name,
-    l_database_name
-FROM ${nm_database_target}metadata_viw_environment;
-
--- Display results
-SELECT 
-    l_environment_code AS current_environment,
-    l_environment_name AS environment_description,
-    l_database_name    AS target_database;
+-- Example 1: Query the environment view to inspect the current deployment environment
+SELECT
+    env.id_environment,
+    env.cd_environment,
+    env.nm_environment,
+    env.nm_database,
+    env.nm_database_target,
+    env.tx_git_remote
+FROM  ${nm_database_target}metadata_viw_environment AS env;
 ```
+
 </details>
 
 <details>
-<summary><strong>Example 2: Environment Validation in Temporary Procedure</strong></summary>
+<summary>Example 2 – Compare view output against the stored environment table</summary>
 
 ```sql
--- Example 2: Environment validation procedure
-REPLACE PROCEDURE ${nm_database_target}temp_environment_validation()
-BEGIN
-    DECLARE l_env_id           CHAR(64)       DEFAULT NULL;
-    DECLARE l_env_code         VARCHAR(32)    DEFAULT NULL;
-    DECLARE l_env_name         VARCHAR(128)   DEFAULT NULL;
-    DECLARE l_db_name          VARCHAR(128)   DEFAULT NULL;
-    DECLARE l_validation_count INTEGER        DEFAULT 0;
-    
-    -- Validate environment setup
-    SELECT 
-        id_environment,
-        cd_environment,
-        nm_environment,
-        nm_database
-    INTO 
-        l_env_id,
-        l_env_code,
-        l_env_name,
-        l_db_name
-    FROM ${nm_database_target}metadata_viw_environment;
-    
-    -- Count validation
-    SELECT COUNT(*) 
-    INTO l_validation_count
-    FROM ${nm_database_target}metadata_viw_environment
-    WHERE cd_environment IS NOT NULL
-      AND nm_environment IS NOT NULL
-      AND nm_database    IS NOT NULL;
-    
-    -- Results display
-    SELECT 
-        l_env_id           AS environment_hash_id,
-        l_env_code         AS environment_code,
-        l_env_name         AS environment_name,
-        l_db_name          AS database_name,
-        l_validation_count AS validation_status,
-        CASE 
-            WHEN l_validation_count = 1 THEN 'VALID'
-            ELSE 'INVALID'
-        END AS environment_status;
-        
-END;
-
--- Execute the validation procedure
-CALL ${nm_database_target}temp_environment_validation();
-
--- Cleanup
-DROP PROCEDURE ${nm_database_target}temp_environment_validation;
+-- Example 2: Validate that the view output matches what is stored in the environment table
+SELECT
+    vw.cd_environment   AS vw_cd_environment,
+    tbl.cd_environment  AS tbl_cd_environment,
+    vw.nm_environment   AS vw_nm_environment,
+    tbl.nm_environment  AS tbl_nm_environment,
+    vw.nm_database      AS vw_nm_database,
+    tbl.nm_database     AS tbl_nm_database
+FROM      ${nm_database_target}metadata_viw_environment  AS vw
+LEFT JOIN ${nm_database_target}metadata_tbl_environment  AS tbl
+ON        tbl.id_environment = vw.id_environment;
 ```
+
 </details>
 
 ---
 
 **Utilized ASN GPT Prompt**
 
-<details>
-<summary>the prompt</summary>
-
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "View" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_viw_" is the functional schema name
-
-and provide functional descption of the view in attachment. Handle the following topics
-1. General Description
-2. logical / functional steps
-3. Example in utilization of this view
-
-- Examples
-   - Use ${nm_database_target} parameter in the SQL Example! (USe find and replace to insert the correct database for the enviroment the dataset is tested on, in DBeaver these parameters can be pre-set)
-   - Provide two example in utilization of this procedure, each example in a separate code block, the code blocks must be calapsable. 
-   - Inlcude declare for all paramters using a 'l_'-prefix for local variables. 
-   - If there are input and/or output parameter rap it into a temporal test procdure that will be dropped at the end of the code. 
-   - variable in the temporal procedure have the prefix `l_`
-   - declared varaible must be align, the datatype should all start at the same position, if default are used align them also.
-   - Do use the fullname of the procedure, for example '${nm_database_target}regression_usp_result'.
-   - If there is a table being populated add select-statement, in the where clause the filter value should be aligned.
-   - cleanup any temporal procedures
-
-- At the End of the document after the Examples, add the following in the give order.
-  - divider line
-  - text **Utilized ASN GPT Prompt**
-  - calapsable text block with the used ASN GPT prompt, title "the prompt" without everthing after
-</details>
+**LLM Used:** Claude (Anthropic)
+**Prompt Used:** [level-1-b-of-sql-view-definition.md](./../../../ai_prompts/documentation-sql-related/level-1-b-of-sql-view-definition.md)
 
 *end of document*

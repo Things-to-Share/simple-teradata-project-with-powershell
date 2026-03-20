@@ -1,50 +1,64 @@
-# Functional Description of `metadata_tbl_environment`
+# Documentation: `tbl_environment.sql` [Back](./../metadata.md)
 
-## Purpose
+## Description
 
-The `metadata_tbl_environment` table serves as a reference table within the metadata functional schema to store information about different database environments. This table maintains a catalog of environments with their unique identifiers, codes, descriptive names, and associated database names. It acts as a central registry for environment management, enabling consistent identification and referencing of various database environments across the system.
+Stores environment-level metadata for each deployment target within the data platform. Each record uniquely identifies an environment by its code and descriptive name, and links it to the physical database name and database target prefix. The table is populated from `viw_environment` and acts as the top-level reference for environment-aware processing across the metadata framework.
 
-## Structure
+## Table Structure
 
-| Order | Is Primary Key | Name | Datatype | Is Nullable | Description |
-|-------|---------------|------|----------|-------------|-------------|
-| 1 | Yes | id_environment | CHAR(64) | No | Unique identifier for the environment, used as primary key |
-| 2 | No | cd_environment | VARCHAR(32) | No | Environment code, typically a short abbreviation |
-| 3 | No | nm_environment | VARCHAR(128) | No | Full descriptive name of the environment |
-| 4 | No | nm_database | VARCHAR(128) | No | Name of the database associated with this environment |
-| 5 | No | meta_dt_created_at | TIMESTAMP | No | Timestamp indicating when the record was created, defaults to current timestamp |
+| Order | Is Primary Key | Name                  | Datatype     | Is Nullable | Functional Description                                                                    |
+|------:|:--------------:|:----------------------|:-------------|:-----------:|:------------------------------------------------------------------------------------------|
+|     1 | Yes            | `id_environment`      | CHAR(64)     | No          | Unique environment identifier; SHA-256 hash of the environment code.                      |
+|     2 | No             | `cd_environment`      | VARCHAR(32)  | No          | Short environment code (e.g. `DEV`, `TST`, `PRD`).                                        |
+|     3 | No             | `nm_environment`      | VARCHAR(128) | No          | Full descriptive name of the environment.                                                 |
+|     4 | No             | `tx_git_remote`       | VARCHAR(999) | Yes         | URL of the Git remote repository associated with this environment.                        |
+|     5 | No             | `nm_database`         | VARCHAR(128) | No          | Physical database name (resolved from DBC catalog) for this environment.                  |
+|     6 | No             | `nm_database_target`  | VARCHAR(128) | No          | Database target prefix used to scope all objects in this environment.                     |
+|     7 | No             | `meta_dt_created_at`  | TIMESTAMP    | Yes         | Record creation timestamp; defaults to `CURRENT_TIMESTAMP`.                               |
 
-## Usage
+## Example in Utilization of this Table
 
-• Environment catalog management and lookup operations
-• Reference table for mapping environment codes to descriptive names
-• Database environment identification in data lineage and metadata processes
-• Supporting environment-specific configurations and deployments
-• Audit trail maintenance through creation timestamp tracking
-• Cross-referencing environments in ETL processes and data governance workflows
+<details>
+<summary>Example 1 – Retrieve all registered environments</summary>
+
+```sql
+-- Example 1: List all environments with their database mapping
+SELECT
+    env.cd_environment,
+    env.nm_environment,
+    env.nm_database,
+    env.nm_database_target,
+    env.tx_git_remote,
+    env.meta_dt_created_at
+FROM  ${nm_database_target}metadata_tbl_environment AS env
+ORDER BY env.cd_environment;
+```
+
+</details>
+
+<details>
+<summary>Example 2 – Look up a specific environment by code</summary>
+
+```sql
+-- Example 2: Retrieve the environment record for a specific environment code
+SELECT
+    env.id_environment,
+    env.cd_environment,
+    env.nm_environment,
+    env.nm_database,
+    env.nm_database_target,
+    env.tx_git_remote
+FROM  ${nm_database_target}metadata_tbl_environment AS env
+WHERE env.cd_environment = 'PRD';
+```
+
+</details>
 
 ---
 
 **Utilized ASN GPT Prompt**
 
-<details>
-<summary>the prompt</summary>
+**LLM Used:** Claude (Anthropic)
+**Prompt Used:** [level-1-a-of-sql-table-or-view-definition.md](./../ai_prompts/documentation-sql-related/level-1-a-of-sql-table-or-view-definition.md)
 
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Prompt:
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Can you create short functional description of the following table definition, Handlingthe following topics
-title should follow the this template "Functional Description of `<name-of-the-table>`".
-
-- The document structure handle the following topic, in the given order
-  - Purpose (Short description of table purpos, max 200 words, DO NOT make it longer then needed)
-  - Structure (present in table format with column for Order, Is Primarykey, Name, Datatype, Is Nullable, Description)
-  -
+*end of document*

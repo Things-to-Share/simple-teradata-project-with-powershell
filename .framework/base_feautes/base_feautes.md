@@ -287,6 +287,6 @@ CALL logging_usp_finish(l_log_id, -1);
 ## **Utilized ASN GPT Prompt**
 
 **LLM Used:** Claude (Anthropic)
-**Prompt Used:** [generate-overall-summery.txt](./../.ai_prompts/generate-overall-summery.txt)
+**Prompt Used:** [generate-overall-summery.txt](./../ai_prompts/documentation-sql-related/level-3-of-sql-layer.md)
 
 *end of document*

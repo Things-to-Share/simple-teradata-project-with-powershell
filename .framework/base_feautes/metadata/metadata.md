@@ -107,34 +107,9 @@ ORDER BY pg.ni_process_group, pg.nm_schema, pg.nm_table;
 
 ---
 
-**Utilized ASN GPT Prompt**
+## **Utilized ASN GPT Prompt**
 
-This was generated with "Complex Claude 4 sonnet"-version
-
-<details>
-<summary>the prompt</summary>
-
-Act like a Teradat SQL expert: 
-- Given the previous texts, create summary overview of the framework utilized by the DD-OSX team. Handle the following topics
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s) 
-- If reference a SQL object make it into a clickable link to the documentation use this format "[`sql-object`](./tables/<name-of-table>.md)" for tables and for procedure use "[`sql-object`](./procedures/<name-of_procedure>.md)"
-
-- The document structure handle the following topic, in the given order
-  - Introduction (MAx 500 words, DO NOT make if longer then is required)
-  - Components of the Framework (present as a table with columns SQL Objecttype (procedure, Table or View), Name, Description)
-  - Add mermaid Diagram on how the various sql-objects are used and related to one another
-  - Let the SQL-objects correlate to the Mermaid diagram, the text of diagram componnets must follow pattern `sql-object-name`.
-  - Key Features
-  - Provide 2 ro 3 practical coding examples
-
-- At the End of the document, add the following in the give order.
-  - divider line
-  - text **Utilized ASN GPT Prompt**
-  - This was generated with "Complex Claud 4 sonnet"-version
-  - calapsable text block with the used ASN GPT prompt, title "the prompt"
-  - Add final blank line
-  - Add the text "*end of document*"
-  - Add final blank line
-</details>
+**LLM Used:** Claude (Anthropic)
+**Prompt Used:** [generate-overall-summery.txt](./../../ai_prompts/documentation-sql-related/level-2-of-sql-schema.md)
 
 *end of document*

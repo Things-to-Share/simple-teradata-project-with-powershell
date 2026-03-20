@@ -1,62 +1,63 @@
-# Functional Description of `metadata_tbl_process_group`
+# Documentation: `tbl_process_group.sql` [Back](./../metadata.md)
 
-## Purpose
+## Description
 
-The `metadata_tbl_process_group` table serves as a metadata repository within the metadata functional schema to manage and track table groupings for processing purposes. This table maintains information about database tables, their schema associations, and assigns them to specific process groups for organized batch processing or ETL operations. It also tracks circular reference indicators to help identify potential dependency issues during processing workflows.
+Stores the computed process group assignment and circular reference flag for each tracked table. Process group numbers are derived from dependency depth — tables with no upstream dependencies are group 0, and each additional dependency level increments the group. This enables ordered, dependency-safe execution of ETL loads. Populated from `viw_process_group`.
 
-## Structure
+## Table Structure
 
-| Order | Is Primary Key | Name | Datatype | Is Nullable | Description |
-|-------|---------------|------|----------|-------------|-------------|
-| 1 | Yes | id_table | CHAR(64) | No | Unique identifier for the table record, used as primary key |
-| 2 | No | nm_schema | VARCHAR(128) | Yes | Name of the database schema containing the table |
-| 3 | No | nm_table | VARCHAR(128) | No | Name of the database table |
-| 4 | No | ni_process_group | INT | Yes | Numeric identifier for the process group assignment |
-| 5 | No | is_circular_referenced | INT | Yes | Flag indicating if the table has circular references (0/1 or NULL) |
-| 6 | No | meta_dt_created_at | TIMESTAMP | No | Timestamp when the record was created, defaults to current timestamp |
+| Order | Is Primary Key | Name                    | Datatype     | Is Nullable | Functional Description                                                                         |
+|------:|:--------------:|:------------------------|:-------------|:-----------:|:-----------------------------------------------------------------------------------------------|
+|     1 | Yes            | `id_table`              | CHAR(64)     | No          | Foreign key to `metadata_tbl_table`; SHA-256 hash of database + table name.                    |
+|     2 | No             | `nm_schema`             | VARCHAR(128) | Yes         | Functional schema name of the table (e.g. `inbound`, `intermediate`).                          |
+|     3 | No             | `nm_table`              | VARCHAR(128) | No          | Physical table name within the schema.                                                         |
+|     4 | No             | `ni_process_group`      | INT          | Yes         | Numeric process group; higher values indicate deeper dependency chains. NULL if undetermined.  |
+|     5 | No             | `is_circular_referenced`| INT          | Yes         | Circular reference flag: `1` = circular dependency detected, `0` = none, `NULL` = unknown.     |
+|     6 | No             | `meta_dt_created_at`    | TIMESTAMP    | Yes         | Record creation timestamp; defaults to `CURRENT_TIMESTAMP`.                                    |
 
-## Usage
+## Example in Utilization of this Table
 
-• Process group management for batch processing and ETL workflow organization
-• Table dependency tracking and circular reference detection
-• Schema and table catalog maintenance within processing frameworks
-• Supporting data lineage and impact analysis operations
-• Enabling parallel processing by grouping tables into logical processing units
-• Audit trail maintenance for process group assignments and modifications
+<details>
+<summary>Example 1 – List all tables ordered by process group</summary>
+
+```sql
+-- Example 1: Retrieve all tables with their process group, ordered for sequential execution
+SELECT
+    pg.nm_schema,
+    pg.nm_table,
+    pg.ni_process_group,
+    pg.is_circular_referenced
+FROM  ${nm_database_target}metadata_tbl_process_group AS pg
+ORDER BY pg.ni_process_group,
+         pg.nm_schema,
+         pg.nm_table;
+```
+
+</details>
+
+<details>
+<summary>Example 2 – Identify tables with circular references</summary>
+
+```sql
+-- Example 2: Find all tables flagged as circularly referenced
+SELECT
+    pg.nm_schema,
+    pg.nm_table,
+    pg.ni_process_group,
+    pg.is_circular_referenced
+FROM  ${nm_database_target}metadata_tbl_process_group AS pg
+WHERE pg.is_circular_referenced = 1
+ORDER BY pg.nm_schema,
+         pg.nm_table;
+```
+
+</details>
 
 ---
 
 **Utilized ASN GPT Prompt**
 
-<details>
-<summary>the prompt</summary>
-
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Prompt:
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Can you create short functional description of the following table definition, Handlingthe following topics
-title should follow the this template "Functional Description of `<name-of-the-table>`".
-
-- The document structure handle the following topic, in the given order
-  - Purpose (Short description of table purpos, max 200 words, DO NOT make it longer then needed)
-  - Structure (present in table format with column for Order, Is Primarykey, Name, Datatype, Is Nullable, Description)
-  - Usage (bullet points on utilization of the table)
-- At the End of the document after the Examples, add the following in the give order.
-  - divider line
-  - text **Utilized ASN GPT Prompt**
-  - calapsable text block with the used ASN GPT prompt, title "the prompt" without everthing after "Table definition:"
-  - Add final blank line
-  - Add the text "*end of document*"
-  - Add final blank line
-
-</details>
+**LLM Used:** Claude (Anthropic)
+**Prompt Used:** [level-1-a-of-sql-table-or-view-definition.md](./../ai_prompts/documentation-sql-related/level-1-a-of-sql-table-or-view-definition.md)
 
 *end of document*

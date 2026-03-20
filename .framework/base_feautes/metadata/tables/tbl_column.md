@@ -1,69 +1,82 @@
-# Functional Description of `metadata_tbl_column`
+# Documentation: `tbl_column.sql` [Back](./../metadata.md)
 
-## Purpose
+## Description
 
-The metadata_tbl_column table serves as a detailed column-level metadata repository within the MBDT database system. This table stores comprehensive information about individual columns across all tables, including technical specifications, functional descriptions, data types, and business classifications. It acts as a complementary catalog to the metadata_tbl_table, providing granular column-level metadata that supports data governance, documentation, and analytical activities by maintaining both technical and business context for each column.
+Stores column-level metadata for all tracked tables within the target database. Each record describes a single column, capturing its physical name, functional name, description, data type, ordinal position, nullability, and business key membership. The table is populated from the corresponding metadata view (`viw_column`) and is a core part of the metadata framework used for data lineage and data catalogue purposes.
 
-## Structure
+## Table Structure
 
-| Order | Is Primary Key | Name | Datatype | Is Nullable | Description |
-|-------|----------------|------|----------|-------------|-------------|
-| 1 | Yes | id_table | CHAR(64) | No | Foreign key reference to the parent table identifier |
-| 2 | Yes | id_column | CHAR(64) | No | Unique identifier for the column |
-| 3 | No | nm_column | VARCHAR(128) | No | Technical name of the column |
-| 4 | No | fn_column | VARCHAR(128) | No | Functional name of the column |
-| 5 | No | fd_column | VARCHAR(1024) | No | Functional description of the column |
-| 6 | No | cd_datatype | VARCHAR(32) | No | Data type code of the column |
-| 7 | No | ni_ordering | INT | No | Ordering number/position of the column within the table |
-| 8 | No | is_nullable | INT | No | Flag indicating if the column allows null values (0/1) |
-| 9 | No | is_businesskey | INT | No | Flag indicating if the column is part of a business key (0/1) |
-| 10 | No | meta_dt_created_at | TIMESTAMP | No | Timestamp when the record was created (defaults to current timestamp) |
+| Order | Is Primary Key | Name                  | Datatype      | Is Nullable | Functional Description                                                          |
+|------:|:--------------:|:----------------------|:--------------|:-----------:|:--------------------------------------------------------------------------------|
+|     1 | Yes            | `id_table`            | CHAR(64)      | No          | Foreign key to `metadata_tbl_table`; SHA-256 hash of database + table name.     |
+|     2 | Yes            | `id_column`           | CHAR(64)      | No          | Unique column identifier; SHA-256 hash of database + table + column name.       |
+|     3 | No             | `nm_column`           | VARCHAR(128)  | No          | Physical column name as registered in the database.                             |
+|     4 | No             | `fn_column`           | VARCHAR(128)  | No          | Functional (business) name of the column.                                       |
+|     5 | No             | `fd_column`           | VARCHAR(1024) | No          | Functional description of the column's business meaning.                        |
+|     6 | No             | `cd_datatype`         | VARCHAR(32)   | No          | Column data type code (e.g. `VARCHAR(128)`, `INTEGER`, `DATE`).                 |
+|     7 | No             | `ni_ordering`         | INT           | No          | Ordinal position of the column within its parent table.                         |
+|     8 | No             | `is_nullable`         | INT           | No          | Nullability flag: `1` = nullable, `0` = not nullable.                           |
+|     9 | No             | `is_businesskey`      | INT           | No          | Business key flag: `1` = part of business key, `0` = not.                       |
+|    10 | No             | `meta_dt_created_at`  | TIMESTAMP     | Yes         | Record creation timestamp; defaults to `CURRENT_TIMESTAMP`.                     |
 
-## Usage
+## Example in Utilization of this Table
 
-- Provides detailed column-level metadata for all tables within the MBDT database system
-- Supports data discovery and understanding through functional names and descriptions
-- Enables data governance through comprehensive column documentation
-- Facilitates data quality assessments by tracking nullable and business key classifications
-- Supports automated data lineage and impact analysis at the column level
-- Assists in data modeling and schema design activities
-- Provides reference information for data analysts and developers
-- Enables automated documentation generation for database schemas
-- Supports data dictionary creation and maintenance
+<details>
+<summary>Example 1 – Retrieve all column metadata for a specific table</summary>
+
+```sql
+-- Example 1: Retrieve all columns for a specific table, ordered by position
+SELECT
+    col.id_table,
+    col.id_column,
+    col.nm_column,
+    col.fn_column,
+    col.fd_column,
+    col.cd_datatype,
+    col.ni_ordering,
+    col.is_nullable,
+    col.is_businesskey,
+    col.meta_dt_created_at
+FROM  ${nm_database_target}metadata_tbl_column AS col
+WHERE col.id_table = (
+    SELECT id_table
+    FROM   ${nm_database_target}metadata_tbl_table
+    WHERE  nm_schema = 'inbound'
+    AND    nm_table  = 'tbl_customer'
+)
+ORDER BY col.ni_ordering;
+```
+
+</details>
+
+<details>
+<summary>Example 2 – Retrieve all business key columns with their table context</summary>
+
+```sql
+-- Example 2: List all business key columns joined with their parent table
+SELECT
+    tbl.nm_schema,
+    tbl.nm_table,
+    col.nm_column,
+    col.fn_column,
+    col.cd_datatype,
+    col.ni_ordering
+FROM      ${nm_database_target}metadata_tbl_column AS col
+JOIN      ${nm_database_target}metadata_tbl_table  AS tbl
+ON        tbl.id_table       = col.id_table
+WHERE     col.is_businesskey = 1
+ORDER BY  tbl.nm_schema,
+          tbl.nm_table,
+          col.ni_ordering;
+```
+
+</details>
 
 ---
 
 **Utilized ASN GPT Prompt**
 
-<details>
-<summary>The prompt</summary>
-
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Prompt:
-Act like a Teradat SQL expert: 
-- Provide functional descption of the "Table" in the file of the attachment. 
-- Leave out "${nm_database_target}" when referencing the procedure, table and/or view name(s)
-- understand that part before "_tbl_" is the functional schema name
-
-Can you create short functional description of the following table definition, Handlingthe following topics
-title should follow the this template "Functional Description of `<name-of-the-table>`".
-
-- The document structure handle the following topic, in the given order
-  - Purpose (Short description of table purpos, max 200 words, DO NOT make it longer then needed)
-  - Structure (present in table format with column for Order, Is Primarykey, Name, Datatype, Is Nullable, Description)
-  - Usage (bullet points on utilization of the table)
-- At the End of the document after the Examples, add the following in the give order.
-  - divider line
-  - text **Utilized ASN GPT Prompt**
-  - calapsable text block with the used ASN GPT prompt, title "the prompt" without everthing after "Table definition:"
-  - Add final blank line
-  - Add the text "*end of document*"
-  - Add final blank line
-
-</details>
+**LLM Used:** Claude (Anthropic)
+**Prompt Used:** [level-1-a-of-sql-table-or-view-definition.md](./../ai_prompts/documentation-sql-related/level-1-a-of-sql-table-or-view-definition.md)
 
 *end of document*
