@@ -22,11 +22,11 @@ function ps_build_and_publish { param(
     }
 
     if ($true) { # Select Environment based on $ip_cd_environment
-      $environment = $environments | Where-Object { $_.cd_environment -eq $ip_cd_environment}
-      $parameters  = $environment.parameters
+      $environment        = $environments | Where-Object { $_.cd_environment -eq $ip_cd_environment}
+      $parameters         = $environment.parameters
       $nm_database_target = ($parameters | Where-Object { $_.name -eq "nm_database_target" }).value
-      $nm_database = $nm_database_target.split('.')[0]
-      $nm_dsn      = $environment.nm_dsn
+      $nm_database        = $nm_database_target.split('.')[0]
+      $nm_dsn             = $environment.nm_dsn
       $ni_max_length_view = $environment.ni_max_length_view
     }
 

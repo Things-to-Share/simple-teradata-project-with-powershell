@@ -1284,6 +1284,7 @@ function ps_generate_table_alter_script { param(
           $value = "CAST(src.$($c.ColumnName) AS $($c.DataType)) AS $($c.ColumnName)"
 
         }
+        
       } 
       else { # Column is New
         if ($true -eq $c.IsNullable) { $value = "CAST(NULL AS $($c.DataType)) AS $($c.ColumnName)" }
